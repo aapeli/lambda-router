@@ -231,7 +231,7 @@ function doPathPartsMatch(eventPath, route) {
     const routePart = routePathParts[i]
 
     // If the part is a curly braces value
-    let pathPartMatch = /^(?<prefix>[^\{]*)\{(?<token>\w+)}(?<suffix>[^\{]*)/g.exec(routePart)
+    let pathPartMatch = /^(?<prefix>[^{]*)\{(?<token>\w+)}(?<suffix>[^{]*)/g.exec(routePart)
     if (pathPartMatch) {
       const prefix = pathPartMatch.groups.prefix ? new RegExp(`^${pathPartMatch.groups.prefix}`, "i") : null
       if(prefix && !pathPart.match(prefix)) return false
