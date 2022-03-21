@@ -36,7 +36,7 @@
   "author": "Tim Kye",
   "license": "Apache-2",
   "dependencies": {
-    "uuid": "^3.3.2"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@kyeotic/eslint-config": "^0.9.0",
