@@ -60,7 +60,7 @@ function Router({
   let onErrorFormat
 
   const route = async (event, context, requestPath, httpMethod) => {
-    let statusCode, body
+    let statusCode, body, isBase64Encoded
     let requestHeaders = normalizeRequestHeaders(event.headers)
     let headers = { ...defaultHeaders }
     // Safety Checks
@@ -135,6 +135,7 @@ function Router({
         statusCode = result.statusCode
         body = result.body
         headers = { ...defaultHeaders, ...result.headers }
+        isBase64Encoded = result.isBase64Encoded
       } else {
         statusCode = 200
         body = result
@@ -156,7 +157,7 @@ function Router({
       }
     }
 
-    return createResponse(statusCode, body, headers, route && route.path, requestPath)
+    return createResponse(statusCode, body, headers, route && route.path, requestPath, isBase64Encoded)
   }
 
   // Bound router functions
@@ -177,11 +178,12 @@ function Router({
   }
 }
 
-function customResponse(context, statusCode, body, headers) {
+function customResponse(context, statusCode, body, headers, isBase64Encoded = false) {
   let response = {
     statusCode,
     body,
-    headers
+    headers,
+    isBase64Encoded: Boolean(isBase64Encoded)
   }
   if (context.includeTraceId && context.traceId) {
     headers['X-Correlation-Id'] = context.traceId
@@ -264,23 +266,24 @@ function defaultUnknownRoute(event, context, path, httpMethod, routes) {
   throw error
 }
 
-function createResponse(statusCode, body, headers, endpoint, uri) {
+function createResponse(statusCode, body, headers, endpoint, uri, isBase64Encoded) {
   return {
     endpoint,
     uri,
     isOk: statusCode.toString()[0] === '2',
-    response: createProxyResponse(statusCode, body, headers)
+    response: createProxyResponse(statusCode, body, headers, isBase64Encoded)
   }
 }
 
-function createProxyResponse(statusCode, body, headers = {}) {
+function createProxyResponse(statusCode, body, headers = {}, isBase64Encoded) {
   if (headers['Content-Type'] === undefined) headers['Content-Type'] = 'application/json'
   // output follows the format described here
   // http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html?shortFooter=true#api-gateway-simple-proxy-for-lambda-output-format
   return {
     statusCode,
     body: typeof body === 'object' ? JSON.stringify(body) : body,
-    headers: { ...headers }
+    headers: { ...headers },
+    isBase64Encoded: Boolean(isBase64Encoded)
   }
 }
 
