@@ -1,7 +1,7 @@
 'use strict'
 
 const qs = require('querystring')
-const uuid = require('uuid/v4')
+const { v4: uuid } = require('uuid')
 const { loggerWrapper } = require('./logger')
 
 const CUSTOM_RESPONSE = Symbol('lambda-router:custom-response')
