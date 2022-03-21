@@ -78,8 +78,8 @@ function Router({
     }
 
     // Allow method and path overrides
-    httpMethod = httpMethod || event.method || event.httpMethod
-    requestPath = requestPath || event.path || event.resourcePath || event.resource
+    httpMethod = httpMethod || event.method || event.requestContext.http.method || event.httpMethod
+    requestPath = requestPath || event.path || event.requestContext.http.path || event.resourcePath || event.resource
 
     if (trimTrailingSlash) {
       requestPath = requestPath.replace(/\/$/, '')
